@@ -1,3 +1,3 @@
-users = {}
+from flask_sqlalchemy import SQLAlchemy
 
-tasks = {}
+db = SQLAlchemy()

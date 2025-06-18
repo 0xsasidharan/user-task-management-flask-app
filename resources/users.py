@@ -1,8 +1,10 @@
 from flask.views import MethodView
-from db import users
-from uuid import uuid4
+# from db import users
+# from uuid import uuid4
 from flask_smorest import Blueprint , abort
 from schemas import UserSchema
+from models import UserModel
+from db import db
 
 blp = Blueprint("Users" , __name__ , description="Operations on users")
 
@@ -10,32 +12,44 @@ blp = Blueprint("Users" , __name__ , description="Operations on users")
 class UserListResource(MethodView):
     @blp.response(200 , UserSchema(many=True))
     def get(self):
-        return list(users.values()) 
+        return list(UserModel.query.all())
 
     @blp.arguments(UserSchema)
     @blp.response(201 ,UserSchema)
     def post(self , request_data):
-        user_id = uuid4().hex
-        user = {**request_data , "user_id" : user_id}
-        users[user_id] = user
-
-        return user
+        new_user = UserModel(name=request_data["name"])
+        db.session.add(new_user)
+        try:
+            db.session.commit()
+        except:
+            db.session.rollback()
+            abort(500 , message="Database error while creating user")
+        return new_user
 
     
-@blp.route("/users/<user_id>")
+@blp.route("/users/<int:user_id>")
 class UserResource(MethodView):
     
     @blp.response(200 , UserSchema)
     def get(self ,user_id):
-        if user_id not in users:
-            abort(404 , message="user_id not found")
-        return users[user_id]
+        user = UserModel.query.get(user_id)
+        if user is None:
+            abort(404 , message="User Id not found")
+        return user
     
 
     @blp.response(200 )
     def delete(self ,user_id):
-        if user_id not in users:
-            abort(404 , message="user_id not found")
-        del users[user_id]
+        user = UserModel.query.get(user_id)
+        if user is None:
+            abort(404 , message="User id not found")
+        
+        db.session.delete(user)
 
-        return {"message" : "User has deleted successfully"}
+        try:
+            db.session.commit()
+        except:
+            db.session.rollback()
+            abort(500 , message="Database error while deleting user")
+
+        return {"message": "User has been deleted successfully"}
