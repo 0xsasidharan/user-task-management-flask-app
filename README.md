@@ -35,8 +35,8 @@ This project follows a clean backend architecture using **Flask-Smorest**, with 
 | 4   | Refactor with Blueprints               | ✅ Done    |
 | 5   | Use MethodView Class-Based Views       | ✅ Done    |
 | 6   | Add Flask-Smorest with Swagger UI      | ✅ Done    |
-| 7   | Add Docker Containerization            | ⬜ Pending |
-| 8   | Database Integration with SQLAlchemy   | ✅ Pending |
+| 7   | Add Docker Containerization            | ✅ Done |
+| 8   | Database Integration with SQLAlchemy   | ✅ Done |
 | 9   | Add JWT Authentication                 | ⬜ Pending |
 
 ---
